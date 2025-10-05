@@ -1,0 +1,23 @@
+{
+    "home": "Accueil",
+    "goTo": "Aller à",
+    "profile": "Profil",
+    "billing": "Facturation",
+    "settings": "Paramètres",
+    "theme": "Thème",
+    "primary": "Principal",
+    "accept": "Accepter",
+    "optOut": "Refuser",
+    "cookieConsent": "Nous utilisons des cookies internes pour améliorer votre expérience sur notre site.",
+    "notifications": "Notifications",
+    "general": "Général",
+    "account": "Compte",
+    "toggle": "Basculer",
+    "generalSettingsPlaceholder": "Espace réservé pour les paramètres généraux (thème, langue, préférences).",
+    "accountSettingsPlaceholder": "Espace réservé pour les paramètres du compte (profil, email, mot de passe).",
+    "logOut": "Déconnexion",
+    "language": "Langue",
+    "appearance": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre"
+}

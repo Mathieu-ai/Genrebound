@@ -1,0 +1,23 @@
+{
+    "home": "Home",
+    "goTo": "Go to",
+    "profile": "Profile",
+    "billing": "Billing",
+    "settings": "Settings",
+    "theme": "Theme",
+    "primary": "Primary",
+    "accept": "Accept",
+    "optOut": "Opt out",
+    "cookieConsent": "We use first-party cookies to enhance your experience on our website.",
+    "notifications": "Notifications",
+    "general": "General",
+    "account": "Account",
+    "toggle": "Toggle",
+    "generalSettingsPlaceholder": "Placeholder for general settings (theme, language, preferences).",
+    "accountSettingsPlaceholder": "Placeholder for account settings (profile, email, password).",
+    "logOut": "Log out",
+    "language": "Language",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark"
+}

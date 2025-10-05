@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma
+  - '@tailwindcss/oxide'
+  - esbuild
+  - maplibre-gl
+  - vue-demi
