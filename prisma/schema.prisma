@@ -14,7 +14,242 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String
+  username      String        @unique
+  bio           String?
+  avatarUrl     String?
+  created       DateTime      @default(now())
+  updated       DateTime      @updatedAt
+  deleted       DateTime?
+  provider      String?
+  providerId    String?
+  emailVerified DateTime?
+  lastLogin     DateTime?
+  role          Role          @default(USER)
+  reviews       Review[]
+  comments      Comment[]
+  lists         List[]
+  followers     Follow[]      @relation("UserFollowing")
+  following     Follow[]      @relation("UserFollows")
+  reviewLikes   ReviewLike[]
+  commentLikes  CommentLike[]
+
+  @@index([username])
+  @@index([email])
+  @@index([role])
+}
+
+model Follow {
+  followerId  Int
+  followingId Int
+  created     DateTime @default(now())
+  follower    User     @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+model Author {
+  id    Int          @id @default(autoincrement())
   name  String
+  bio   String?
+  slug  String?      @unique
+  books BookAuthor[]
+
+  @@unique([name])
+  @@index([name])
+  @@index([slug])
+}
+
+model Book {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  coverUrl    String?
+  published   Int?
+  created     DateTime     @default(now())
+  updated     DateTime     @updatedAt
+  deleted     DateTime?
+  avgRating   Float?       @default(0)
+  ratingCount Int          @default(0)
+  views       Int          @default(0)
+  slug        String       @unique
+  isbn        String?      @unique
+  language    String?
+  authors     BookAuthor[]
+  reviews     Review[]
+  listItems   ListItem[]
+  tags        BookTag[]
+
+  @@index([title])
+  @@index([slug])
+  @@index([language])
+}
+
+model BookAuthor {
+  bookId   Int
+  authorId Int
+  book     Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, authorId])
+  @@index([authorId])
+}
+
+model Review {
+  id         Int          @id @default(autoincrement())
+  userId     Int
+  bookId     Int
+  rating     Int          @db.SmallInt
+  title      String?
+  content    String
+  helpful    Int          @default(0)
+  created    DateTime     @default(now())
+  updated    DateTime     @updatedAt
+  deleted    DateTime?
+  edited     Boolean      @default(false)
+  status     ReviewStatus @default(PENDING)
+  spoiler    Boolean      @default(false)
+  likesCount Int          @default(0)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book       Book         @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  comments   Comment[]
+  likes      ReviewLike[]
+
+  @@unique([userId, bookId])
+  @@index([bookId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Comment {
+  id         Int           @id @default(autoincrement())
+  userId     Int
+  reviewId   Int
+  content    String
+  created    DateTime      @default(now())
+  updated    DateTime      @updatedAt
+  deleted    DateTime?
+  parentId   Int?
+  edited     Boolean       @default(false)
+  likesCount Int           @default(0)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review     Review        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  parent     Comment?      @relation("CommentTree", fields: [parentId], references: [id])
+  children   Comment[]     @relation("CommentTree")
+  likes      CommentLike[]
+
+  @@index([reviewId])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model List {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String?
+  public      Boolean    @default(false)
+  created     DateTime   @default(now())
+  updated     DateTime   @updatedAt
+  deleted     DateTime?
+  slug        String?    @unique
+  type        ListType   @default(CUSTOM)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       ListItem[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([public])
+  @@index([slug])
+  @@index([type])
+}
+
+model ListItem {
+  listId Int
+  bookId Int
+  order  Int?
+  added  DateTime   @default(now())
+  status ItemStatus @default(TO_READ)
+  note   String?
+  list   List       @relation(fields: [listId], references: [id], onDelete: Cascade)
+  book   Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@id([listId, bookId])
+  @@index([bookId])
+  @@index([status])
+}
+
+model Tag {
+  id      Int       @id @default(autoincrement())
+  name    String
+  slug    String    @unique
+  created DateTime  @default(now())
+  updated DateTime  @updatedAt
+  books   BookTag[]
+
+  @@unique([name])
+  @@index([name])
+  @@index([slug])
+}
+
+model BookTag {
+  bookId Int
+  tagId  Int
+  book   Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, tagId])
+  @@index([tagId])
+}
+
+model ReviewLike {
+  userId   Int
+  reviewId Int
+  created  DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review   Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@id([userId, reviewId])
+  @@index([reviewId])
+}
+
+model CommentLike {
+  userId    Int
+  commentId Int
+  created   DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
+  @@index([commentId])
+}
+
+enum Role {
+  USER
+  ADMIN
+  MOD
+}
+
+enum ReviewStatus {
+  PENDING
+  ACTIVE
+  HIDDEN
+}
+
+enum ListType {
+  CUSTOM
+  FAVORITES
+  READ_NEXT
+  WISHLIST
+}
+
+enum ItemStatus {
+  TO_READ
+  READING
+  READ
+  ABANDONED
 }
